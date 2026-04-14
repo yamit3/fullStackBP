@@ -8,8 +8,8 @@ This guide explains how to build and run the Angular Frontend application using 
 Build and run with Docker:
 
 ```bash
-docker build -t angular-app .
-docker run -p 4200:4200 angular-app
+docker build -t angular-app:latest .
+docker run --rm -p 4000:4000 --name fullstackbp-front angular-app:latest
 
 ```
 Or with Docker Compose:

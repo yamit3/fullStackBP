@@ -45,8 +45,8 @@ EXPOSE 4200
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:4200', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
-# Use dumb-init to run the application
-ENTRYPOINT ["/sbin/dumb-init", "--"]
+# Use dumb-init from PATH (Alpine installs it under /usr/bin)
+ENTRYPOINT ["dumb-init", "--"]
 
 # Run the SSR server
 CMD ["node", "dist/front/server/server.mjs"]
