@@ -34,7 +34,7 @@ export class ClientService {
   }
 
   getReport(payload: AccountReportRequest): Observable<AccountReport> {
-    return this.http.post<AccountReport>(`${environment.apiBaseUrl}/reporte`, payload).pipe(catchError(this.handleError));
+    return this.http.post<AccountReport>(`${this.baseUrl}/reporte`, payload).pipe(catchError(this.handleError));
   }
 
   private normalizeError(error: HttpErrorResponse): ApiError {

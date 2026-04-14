@@ -1,25 +1,102 @@
 <section class="section-shell" aria-labelledby="page-title">
   <div class="content-header">
     <h2 id="page-title" class="section-title">{{ title }}</h2>
-    <button type="button" class="new-button" [attr.aria-label]="createButtonAriaLabel">
-      Nuevo
-    </button>
   </div>
 
-  <label class="sr-only" for="search-input">{{ searchLabel }}</label>
-  <input
-    id="search-input"
-    type="search"
-    class="search-input"
-    [formControl]="searchControl"
-    [placeholder]="searchPlaceholder"
-  />
+  <form [formGroup]="reportForm" class="report-form">
+    <div class="form-group">
+      <label for="client-select">Cliente</label>
+      <select
+        id="client-select"
+        formControlName="client"
+        class="form-control"
+        required
+      >
+        <option value="" disabled selected>Seleccionar cliente</option>
+        @for (client of clients; track client.id) {
+          <option [value]="client.identification">{{ client.name }}</option>
+        }
+      </select>
+      @if (reportForm.get('client')?.invalid && reportForm.get('client')?.touched) {
+        <span class="error-message">Cliente es requerido</span>
+      }
+    </div>
 
-  <section class="table-panel" [attr.aria-label]="tableAriaLabel">
-    <h3 class="sr-only">Resultados</h3>
-    @for (row of rows; track row) {
-      <div class="table-row" aria-hidden="true"></div>
-    }
-  </section>
+    <div class="form-group">
+      <label for="start-date">Fecha de inicio</label>
+      <input
+        id="start-date"
+        type="date"
+        formControlName="startDate"
+        class="form-control"
+        required
+      />
+      @if (reportForm.get('startDate')?.invalid && reportForm.get('startDate')?.touched) {
+        <span class="error-message">Fecha de inicio es requerida</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="end-date">Fecha de fin</label>
+      <input
+        id="end-date"
+        type="date"
+        formControlName="endDate"
+        class="form-control"
+        required
+      />
+      @if (reportForm.get('endDate')?.invalid && reportForm.get('endDate')?.touched) {
+        <span class="error-message">Fecha de fin es requerida</span>
+      }
+      @if (isEndDateInvalid()) {
+        <span class="error-message">Fecha de fin debe ser mayor o igual a fecha de inicio</span>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="generateReport()"
+        [disabled]="reportForm.invalid || isEndDateInvalid()"
+      >
+        Generar reporte
+      </button>
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="downloadPdf()"
+        [disabled]="reportForm.invalid || isEndDateInvalid()"
+      >
+        Descargar PDF
+      </button>
+    </div>
+  </form>
+
+  @if (showResults) {
+    <section class="table-panel" aria-label="Resultados del reporte">
+      <h3 class="section-subtitle">Resultados</h3>
+      @if (reportResults.length > 0) {
+        <div class="results-table">
+          <div class="table-header">
+            <div class="table-cell">Número de Cuenta</div>
+            <div class="table-cell">Balance</div>
+            <div class="table-cell">Depósitos</div>
+            <div class="table-cell">Retiros</div>
+          </div>
+          @for (account of reportResults; track account.number) {
+            <div class="table-row">
+              <div class="table-cell">{{ account.number }}</div>
+              <div class="table-cell">{{ account.balance | currency }}</div>
+              <div class="table-cell">{{ account.deposits | currency }}</div>
+              <div class="table-cell">{{ account.withdraws | currency }}</div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="no-results">No hay cuentas para mostrar en el período seleccionado</p>
+      }
+    </section>
+  }
 </section>
 
