@@ -14,10 +14,14 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the banking layout', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, front');
+
+    expect(compiled.querySelector('.brand')?.textContent).toContain('BANCO');
+    expect(compiled.querySelector('#page-title')?.textContent).toContain('Clientes');
+    expect(compiled.querySelector('.new-button')?.textContent).toContain('Nuevo');
+    expect(compiled.querySelector('#search-input')).toBeTruthy();
   });
 });

@@ -1,12 +1,27 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
+
+type MenuSection = 'Clientes' | 'Cuentas' | 'Movimientos' | 'Reportes';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ReactiveFormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly title = signal('front');
+  protected readonly menuItems: readonly MenuSection[] = [
+    'Clientes',
+    'Cuentas',
+    'Movimientos',
+    'Reportes',
+  ];
+  protected readonly activeSection = signal<MenuSection>('Clientes');
+  protected readonly searchControl = new FormControl('', { nonNullable: true });
+  protected readonly pageTitle = computed(() => this.activeSection());
+
+  protected setActiveSection(section: MenuSection): void {
+    this.activeSection.set(section);
+  }
 }
