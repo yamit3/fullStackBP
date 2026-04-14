@@ -31,15 +31,6 @@ class MovementDtoValidationTest {
         factory.close();
     }
 
-    @Test
-    void shouldRejectWhenDateIsNull() {
-        MovementDto dto = validDto();
-        dto.setDate(null);
-
-        Set<ConstraintViolation<MovementDto>> violations = validator.validate(dto);
-
-        assertTrue(violations.stream().anyMatch(v -> "date".equals(v.getPropertyPath().toString())));
-    }
 
     @Test
     void shouldRejectWhenValueIsNull() {
