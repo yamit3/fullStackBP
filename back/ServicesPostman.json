@@ -216,6 +216,54 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Generate Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains accounts or pdf\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.accounts || jsonData.pdf).to.exist;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identification\": \"1234567890\",\n  \"startDate\": 1744588800000,\n  \"endDate\": 1744675199000,\n  \"pdf\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/clientes/reporte",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "clientes",
+                "reporte"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },

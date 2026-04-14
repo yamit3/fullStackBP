@@ -2,6 +2,8 @@ package com.pichincha.software.engineer.back.controller;
 
 import com.pichincha.software.engineer.back.service.ClientService;
 import com.pichincha.software.engineer.back.service.dto.ClientDto;
+import com.pichincha.software.engineer.back.service.dto.report.AccountReportRequestDto;
+import com.pichincha.software.engineer.back.service.dto.report.AccountReportResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,12 @@ public class ClientController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClientDto create(@Valid @RequestBody ClientDto clientDto) {
         return clientService.create(clientDto);
+    }
+
+    @PostMapping("/reporte")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountReportResponseDto createReport(@Valid @RequestBody AccountReportRequestDto request) {
+        return clientService.generateReport(request);
     }
 
     @GetMapping("/{identification}")

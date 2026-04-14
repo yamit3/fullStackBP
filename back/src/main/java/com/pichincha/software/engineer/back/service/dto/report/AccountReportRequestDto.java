@@ -23,5 +23,5 @@ public class AccountReportRequestDto {
     @NotNull
     Long endDate;
 
-    Boolean pdf = Boolean.FALSE;
+    boolean pdf = false;
 }

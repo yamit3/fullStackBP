@@ -25,7 +25,7 @@ public class AccountReportResponseDto {
     public static class Account {
         String number;
         BigDecimal balance;
-        BigDecimal credits;
+        BigDecimal deposits;
         BigDecimal withdraws;
     }
 
