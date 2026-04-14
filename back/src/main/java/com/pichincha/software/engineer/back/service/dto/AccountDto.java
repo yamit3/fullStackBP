@@ -31,4 +31,6 @@ public class AccountDto {
     BigDecimal initialBalance;
 
     Boolean active;
+
+    Long clientId;
 }

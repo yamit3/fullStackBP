@@ -28,4 +28,6 @@ public class MovementDto {
     BigDecimal value;
 
     BigDecimal balance;
+
+    Long accountId;
 }

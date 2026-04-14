@@ -56,7 +56,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<ClientDto> findAll() {
         try {
-            return clientRepository.findAll()
+            return clientRepository.findAllByActiveTrue()
                     .stream()
                     .map(this::toDto)
                     .toList();
@@ -86,7 +86,8 @@ public class ClientServiceImpl implements ClientService {
     public void delete(Long id) {
         try {
             Client existingClient = getClientOrThrow(id);
-            clientRepository.delete(existingClient);
+            existingClient.setActive(false);
+            clientRepository.save(existingClient);
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationException("Client cannot be deleted due to related data", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
@@ -101,7 +102,7 @@ public class ClientServiceImpl implements ClientService {
             throw new ApplicationException("Client id is required", HttpStatus.BAD_REQUEST);
         }
 
-        return clientRepository.findById(id)
+        return clientRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new ApplicationException("Client not found with id: " + id, HttpStatus.NOT_FOUND));
     }
 

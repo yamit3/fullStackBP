@@ -59,6 +59,9 @@ public class Movement {
     @Column(nullable = false, precision = 19, scale = 2)
     BigDecimal balance;
 
+    @Column(nullable = false)
+    Boolean active = true;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id", nullable = false)
     Account account;
