@@ -51,8 +51,6 @@ public class Movement {
     @Column(nullable = false)
     MovementType type;
 
-    @NotNull(message = "Value must not be null")
-    @DecimalMin(value = "0.00", inclusive = false, message = "Value must be different than zero")
     @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     BigDecimal value;
 

@@ -17,8 +17,6 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MovementDto {
     Long id;
-
-    @NotNull(message = "Date must not be null")
     Long date;
 
     MovementType type;

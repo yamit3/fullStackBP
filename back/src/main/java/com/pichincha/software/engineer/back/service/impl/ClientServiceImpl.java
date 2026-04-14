@@ -5,6 +5,8 @@ import com.pichincha.software.engineer.back.model.Client;
 import com.pichincha.software.engineer.back.repository.ClientRepository;
 import com.pichincha.software.engineer.back.service.ClientService;
 import com.pichincha.software.engineer.back.service.dto.ClientDto;
+import com.pichincha.software.engineer.back.service.dto.report.AccountReportRequestDto;
+import com.pichincha.software.engineer.back.service.dto.report.AccountReportResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -93,6 +95,11 @@ public class ClientServiceImpl implements ClientService {
         } catch (Exception ex) {
             throw new ApplicationException("Unexpected error while deleting client", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public AccountReportResponseDto generateReport(AccountReportRequestDto request) {
+        return null;
     }
 
     private Client getClientOrThrow(Long id) {

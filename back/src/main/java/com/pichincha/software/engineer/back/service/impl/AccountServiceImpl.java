@@ -34,7 +34,8 @@ public class AccountServiceImpl implements AccountService {
             Account account = toEntity(accountDto);
             account.setId(null);
             account.setNumber(nextAccountNumber());
-            return toDto(accountRepository.save(account));
+            account.setCurrentBalance(account.getInitialBalance());
+            return toDto(accountRepository.saveAndFlush(account));
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationException("Account data violates constraints", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
@@ -154,6 +155,7 @@ public class AccountServiceImpl implements AccountService {
                 .number(account.getNumber())
                 .type(account.getType())
                 .initialBalance(account.getInitialBalance())
+                .currentBalance(account.getCurrentBalance())
                 .active(account.getActive())
                 .clientId(account.getClient() != null ? account.getClient().getId() : null)
                 .build();

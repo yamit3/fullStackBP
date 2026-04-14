@@ -16,13 +16,13 @@ INSERT INTO client (id, password, active) VALUES
 -- ACCOUNT Test Data (Account numbers auto-generated)
 -- =====================================================
 
-INSERT INTO account (id, number, type, initial_balance, active, client_id) VALUES
-(1, '100001', 'CHECKING', 5000.00, true, 1),
-(2, '100002', 'SAVINGS', 10000.00, true, 1),
-(3, '100003', 'CHECKING', 3500.50, true, 2),
-(4, '100004', 'SAVINGS', 25000.00, true, 2),
-(5, '100005', 'CHECKING', 7200.75, true, 3),
-(6, '100006', 'SAVINGS', 50000.00, true, 3);
+INSERT INTO account (id, number, type, initial_balance, current_balance, active, client_id) VALUES
+(1, '100001', 'CHECKING', 5000.00, 5500.00, true, 1),
+(2, '100002', 'SAVINGS', 10000.00, 10500.00, true, 1),
+(3, '100003', 'CHECKING', 3500.50, 4000.50, true, 2),
+(4, '100004', 'SAVINGS', 25000.00, 27000.00, true, 2),
+(5, '100005', 'CHECKING', 7200.75, 7600.75, true, 3),
+(6, '100006', 'SAVINGS', 50000.00, 55000.00, true, 3);
 
 -- =====================================================
 -- MOVEMENT Test Data

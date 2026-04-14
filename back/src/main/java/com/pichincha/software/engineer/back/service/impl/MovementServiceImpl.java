@@ -1,8 +1,10 @@
 package com.pichincha.software.engineer.back.service.impl;
 
+import com.pichincha.software.engineer.back.configuration.MovementProperties;
 import com.pichincha.software.engineer.back.exception.ApplicationException;
 import com.pichincha.software.engineer.back.model.Account;
 import com.pichincha.software.engineer.back.model.Movement;
+import com.pichincha.software.engineer.back.model.enums.MovementType;
 import com.pichincha.software.engineer.back.repository.AccountRepository;
 import com.pichincha.software.engineer.back.repository.MovementRepository;
 import com.pichincha.software.engineer.back.service.MovementService;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class MovementServiceImpl implements MovementService {
 
     private final MovementRepository movementRepository;
     private final AccountRepository accountRepository;
+    private final MovementProperties movementProperties;
 
     @Override
     @Transactional
@@ -30,9 +34,31 @@ public class MovementServiceImpl implements MovementService {
         validateMovementPayload(movementDto);
 
         try {
-            Movement movement = toEntity(movementDto);
+
+            Account account = getAccountOrThrow(movementDto.getAccountId());
+
+            BigDecimal adjustedValue = movementDto.getValue();
+            if (MovementType.WITHDRAW.equals(movementDto.getType())) {
+                adjustedValue = adjustedValue.negate();
+            }
+
+            BigDecimal newBalance = account.getCurrentBalance().add(adjustedValue);
+
+            if (MovementType.WITHDRAW.equals(movementDto.getType()) && account.getCurrentBalance().signum() == 0) {
+                throw new ApplicationException("No available balance", HttpStatus.BAD_REQUEST);
+            }
+
+            if (MovementType.WITHDRAW.equals(movementDto.getType())) {
+                validateDailyWithdrawLimit(account.getId(), adjustedValue);
+            }
+
+            Movement movement = toEntity(movementDto, account, adjustedValue, newBalance);
             movement.setId(null);
-            return toDto(movementRepository.save(movement));
+
+            account.setCurrentBalance(newBalance);
+            accountRepository.save(account);
+
+            return toDto(movementRepository.saveAndFlush(movement));
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationException("Movement data violates constraints", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
@@ -45,6 +71,7 @@ public class MovementServiceImpl implements MovementService {
     @Override
     public MovementDto findById(Long id) {
         try {
+
             return toDto(getMovementOrThrow(id));
         } catch (ApplicationException ex) {
             throw ex;
@@ -101,9 +128,6 @@ public class MovementServiceImpl implements MovementService {
         if (movementDto == null) {
             throw new ApplicationException("Movement payload is required", HttpStatus.BAD_REQUEST);
         }
-        if (movementDto.getDate() == null) {
-            throw new ApplicationException("Movement date is required", HttpStatus.BAD_REQUEST);
-        }
         if (movementDto.getType() == null) {
             throw new ApplicationException("Movement type is required", HttpStatus.BAD_REQUEST);
         }
@@ -132,14 +156,29 @@ public class MovementServiceImpl implements MovementService {
                 .orElseThrow(() -> new ApplicationException("Account not found with id: " + accountId, HttpStatus.NOT_FOUND));
     }
 
-    private Movement toEntity(MovementDto movementDto) {
+    private void validateDailyWithdrawLimit(Long accountId, BigDecimal withdrawValue) {
+        Timestamp date = new Timestamp(System.currentTimeMillis());
+        BigDecimal dailyWithdraws = movementRepository.sumDailyWithdraws(accountId, date)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal totalWithdraws = dailyWithdraws.add(withdrawValue.abs());
+
+        if (totalWithdraws.compareTo(movementProperties.getDailyWithdrawLimit()) > 0) {
+            throw new ApplicationException(
+                    "Daily withdraw limit exceeded. Limit: " + movementProperties.getDailyWithdrawLimit(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    private Movement toEntity(MovementDto movementDto, Account account, BigDecimal adjustedValue, BigDecimal newBalance) {
         Movement movement = new Movement();
-        movement.setDate(new Timestamp(movementDto.getDate()));
+        movement.setDate(new Timestamp(System.currentTimeMillis()));
         movement.setType(movementDto.getType());
-        movement.setBalance(movementDto.getBalance());
-        movement.setValue(movementDto.getValue());
+        movement.setBalance(newBalance);
+        movement.setValue(adjustedValue);
         movement.setActive(true);
-        movement.setAccount(getAccountOrThrow(movementDto.getAccountId()));
+        movement.setAccount(account);
         return movement;
     }
 

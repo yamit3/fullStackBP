@@ -26,6 +26,8 @@ public class AccountDto {
     @DecimalMin(value = "0.00", inclusive = false, message = "Initial balance must be greater than zero")
     BigDecimal initialBalance;
 
+    BigDecimal currentBalance;
+
     Boolean active;
 
     Long clientId;

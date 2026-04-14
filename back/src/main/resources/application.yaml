@@ -22,3 +22,6 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: false
+
+movement:
+  daily-withdraw-limit: 1000

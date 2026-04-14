@@ -36,6 +36,9 @@ public class Account {
     @Column(nullable = false, precision = 19, scale = 2)
     BigDecimal initialBalance;
 
+    @Column(nullable = false, precision = 19, scale = 2)
+    BigDecimal currentBalance = BigDecimal.ZERO;
+
     @Column(nullable = false)
     Boolean active;
 
