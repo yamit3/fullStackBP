@@ -11,6 +11,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ClientDto extends PersonDto {
-   String password;
-   Boolean active;
+    String password;
+    Boolean active;
 }

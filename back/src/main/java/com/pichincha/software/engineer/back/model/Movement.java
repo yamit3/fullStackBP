@@ -9,10 +9,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +32,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "movement")
+@Table(
+    name = "movement",
+    indexes = @Index(name = "idx_movement_account_id", columnList = "account_id")
+)
 public class Movement {
 
     @Id
@@ -37,6 +43,7 @@ public class Movement {
     @SequenceGenerator(name = "movement_seq_gen", sequenceName = "movement_seq", allocationSize = 1)
     Long id;
 
+    @NotNull(message = "Date must not be null")
     @Column(nullable = false)
     Timestamp date;
 
@@ -44,6 +51,8 @@ public class Movement {
     @Column(nullable = false)
     MovementType type;
 
+    @NotNull(message = "Value must not be null")
+    @DecimalMin(value = "0.00", inclusive = false, message = "Value must be different than zero")
     @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     BigDecimal value;
 

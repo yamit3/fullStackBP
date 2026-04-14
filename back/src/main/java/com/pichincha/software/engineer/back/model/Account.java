@@ -15,7 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "account")
+@Table(
+    name = "account",
+    indexes = @Index(name = "idx_account_client_id", columnList = "client_id")
+)
 public class Account {
 
     @Id
