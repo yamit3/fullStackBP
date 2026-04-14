@@ -1,7 +1,12 @@
-<section class="section-shell" aria-labelledby="page-title">
+<div class="section-shell" aria-labelledby="page-title">
   <div class="content-header">
     <h2 id="page-title" class="section-title">{{ title }}</h2>
-    <button type="button" class="new-button" [attr.aria-label]="createButtonAriaLabel">
+    <button
+      type="button"
+      class="new-button"
+      [attr.aria-label]="createButtonAriaLabel"
+      (click)="openCreateModal()"
+    >
       Nuevo
     </button>
   </div>
@@ -40,8 +45,12 @@
           <tr class="table-row">
             <td colspan="6">No hay clientes registrados.</td>
           </tr>
+        } @else if (filteredClients().length === 0) {
+          <tr class="table-row">
+            <td colspan="6">No hay coincidencias para la busqueda.</td>
+          </tr>
         } @else {
-          @for (client of clients(); track client.id) {
+          @for (client of filteredClients(); track client.id) {
             <tr class="table-row">
               <td>{{ client.name }}</td>
               <td>{{ client.address }}</td>
@@ -49,7 +58,7 @@
               <td>{{ client.password ?? '---' }}</td>
               <td>{{ client.active ? 'Activo' : 'Inactivo' }}</td>
               <td>
-                <button type="button" aria-label="Editar cliente">🖊</button>
+                <button type="button" aria-label="Editar cliente" (click)="openEditModal(client)">🖊</button>
                 <button type="button" aria-label="Eliminar cliente">❌</button>
               </td>
             </tr>
@@ -58,5 +67,119 @@
       </tbody>
     </table>
   </div>
-</section>
+</div>
+
+@if (showCreateModal()) {
+  <button
+    type="button"
+    class="modal-backdrop"
+    (click)="closeCreateModal()"
+    aria-label="Cerrar formulario de creacion"
+  ></button>
+  <dialog
+    class="modal"
+    open
+    aria-labelledby="create-client-title"
+  >
+    <h3 id="create-client-title" class="modal-title">Crear cliente</h3>
+
+    @if (createError()) {
+      <p class="modal-error" role="alert">{{ createError()?.message }} ({{ createError()?.status }})</p>
+    }
+
+    <form class="modal-form" [formGroup]="createForm" (ngSubmit)="submitCreateClient()">
+      <label for="client-name">Nombres</label>
+      <input id="client-name" type="text" formControlName="name" />
+
+      <label for="client-identification">Identificacion</label>
+      <input id="client-identification" type="text" formControlName="identification" />
+
+      <label for="client-address">Direccion</label>
+      <input id="client-address" type="text" formControlName="address" />
+
+      <label for="client-phone">Telefono</label>
+      <input id="client-phone" type="tel" formControlName="phone" />
+
+      <label for="client-password">Contrasena</label>
+      <input id="client-password" type="password" formControlName="password" />
+
+      <label for="client-gender">Genero</label>
+      <select id="client-gender" formControlName="gender">
+        <option value="" disabled>Seleccionar genero</option>
+        <option value="MALE">Hombre</option>
+        <option value="FEMALE">Mujer</option>
+      </select>
+
+      <label for="client-age">Edad</label>
+      <input id="client-age" type="number" formControlName="age" min="0" />
+
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeCreateModal()" [disabled]="isCreating()">Cancelar</button>
+        <button type="submit" [disabled]="createForm.invalid || isCreating()">
+          {{ isCreating() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </dialog>
+}
+
+@if (showEditModal()) {
+  <button
+    type="button"
+    class="modal-backdrop"
+    (click)="closeEditModal()"
+    aria-label="Cerrar formulario de edicion"
+  ></button>
+  <dialog
+    class="modal"
+    open
+    aria-labelledby="edit-client-title"
+  >
+    <h3 id="edit-client-title" class="modal-title">Editar cliente</h3>
+
+    @if (editError()) {
+      <p class="modal-error" role="alert">{{ editError()?.message }} ({{ editError()?.status }})</p>
+    }
+
+    <form class="modal-form" [formGroup]="editForm" (ngSubmit)="submitEditClient()">
+      <label for="edit-client-name">Nombres</label>
+      <input id="edit-client-name" type="text" formControlName="name" />
+
+      <label for="edit-client-identification">Identificacion</label>
+      <input id="edit-client-identification" type="text" formControlName="identification" />
+
+      <label for="edit-client-address">Direccion</label>
+      <input id="edit-client-address" type="text" formControlName="address" />
+
+      <label for="edit-client-phone">Telefono</label>
+      <input id="edit-client-phone" type="tel" formControlName="phone" />
+
+      <label for="edit-client-password">Contrasena</label>
+      <input id="edit-client-password" type="password" formControlName="password" />
+
+      <label for="edit-client-gender">Genero</label>
+      <select id="edit-client-gender" formControlName="gender">
+        <option value="" disabled>Seleccionar genero</option>
+        <option value="MALE">Hombre</option>
+        <option value="FEMALE">Mujer</option>
+      </select>
+
+      <label for="edit-client-age">Edad</label>
+      <input id="edit-client-age" type="number" formControlName="age" min="0" max="120" />
+
+      <label class="modal-checkbox-label" for="edit-client-active">
+        <input id="edit-client-active" type="checkbox" formControlName="active" />
+        Activo
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" (click)="closeEditModal()" [disabled]="isEditing()">Cancelar</button>
+        <button type="submit" [disabled]="editForm.invalid || isEditing()">
+          {{ isEditing() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </dialog>
+}
 

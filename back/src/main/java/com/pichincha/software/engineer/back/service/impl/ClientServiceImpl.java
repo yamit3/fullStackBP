@@ -54,6 +54,7 @@ public class ClientServiceImpl implements ClientService {
             client.setId(null);
             return toDto(clientRepository.saveAndFlush(client));
         } catch (DataIntegrityViolationException ex) {
+            ex.printStackTrace();
             throw new ApplicationException("Client data violates constraints", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
             throw ex;
