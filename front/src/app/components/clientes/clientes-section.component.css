@@ -197,6 +197,30 @@
   cursor: not-allowed;
 }
 
+.modal-confirm {
+  max-width: 450px;
+}
+
+.modal-message {
+  margin: 1rem 0;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.modal-confirm-actions {
+  flex-direction: row-reverse;
+}
+
+.modal-delete-button {
+  background: #dc2626;
+  border-color: #991b1b;
+  color: #ffffff;
+}
+
+.modal-delete-button:hover:not([disabled]) {
+  background: #b91c1c;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

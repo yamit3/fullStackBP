@@ -58,8 +58,8 @@
               <td>{{ client.password ?? '---' }}</td>
               <td>{{ client.active ? 'Activo' : 'Inactivo' }}</td>
               <td>
-                <button type="button" aria-label="Editar cliente" (click)="openEditModal(client)">🖊</button>
-                <button type="button" aria-label="Eliminar cliente">❌</button>
+                <button type="button" aria-label="Editar cliente" (click)="openEditModal(client)">✒️</button>
+                <button type="button" aria-label="Eliminar cliente" (click)="openDeleteModal(client)">❌</button>
               </td>
             </tr>
           }
@@ -121,6 +121,43 @@
         </button>
       </div>
     </form>
+  </dialog>
+}
+
+@if (showDeleteModal()) {
+  <button
+    type="button"
+    class="modal-backdrop"
+    (click)="closeDeleteModal()"
+    aria-label="Cerrar confirmacion de eliminacion"
+  ></button>
+  <dialog
+    class="modal modal-confirm"
+    open
+    aria-labelledby="delete-client-title"
+  >
+    <h3 id="delete-client-title" class="modal-title">Confirmar eliminación</h3>
+
+    <p class="modal-message">
+      ¿Está seguro de que desea eliminar al cliente <strong>{{ deletingClientName() }}</strong>?
+      Esta acción no se puede deshacer.
+    </p>
+
+    @if (deleteError()) {
+      <p class="modal-error" role="alert">{{ deleteError()?.message }} ({{ deleteError()?.status }})</p>
+    }
+
+    <div class="modal-actions modal-confirm-actions">
+      <button type="button" (click)="closeDeleteModal()" [disabled]="isDeleting()">Cancelar</button>
+      <button
+        type="button"
+        class="modal-delete-button"
+        (click)="confirmDeleteClient()"
+        [disabled]="isDeleting()"
+      >
+        {{ isDeleting() ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+    </div>
   </dialog>
 }
 

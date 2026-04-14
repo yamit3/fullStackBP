@@ -60,6 +60,11 @@ export class ClientesSectionComponent implements OnInit {
   protected readonly loadError = signal<ApiError | null>(null);
   protected readonly createError = signal<ApiError | null>(null);
   protected readonly editError = signal<ApiError | null>(null);
+  protected readonly showDeleteModal = signal(false);
+  protected readonly deletingClientId = signal<number | null>(null);
+  protected readonly deletingClientName = signal<string | null>(null);
+  protected readonly isDeleting = signal(false);
+  protected readonly deleteError = signal<ApiError | null>(null);
   protected readonly searchTerm = toSignal(
     this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value),
@@ -210,6 +215,45 @@ export class ClientesSectionComponent implements OnInit {
         error: (error: ApiError) => {
           this.isEditing.set(false);
           this.editError.set(error);
+        },
+      });
+  }
+
+  protected openDeleteModal(client: Client): void {
+    this.deleteError.set(null);
+    this.deletingClientId.set(client.id);
+    this.deletingClientName.set(client.name);
+    this.showDeleteModal.set(true);
+  }
+
+  protected closeDeleteModal(): void {
+    this.showDeleteModal.set(false);
+    this.deletingClientId.set(null);
+    this.deletingClientName.set(null);
+  }
+
+  protected confirmDeleteClient(): void {
+    const clientId = this.deletingClientId();
+
+    if (clientId === null) {
+      return;
+    }
+
+    this.isDeleting.set(true);
+    this.deleteError.set(null);
+
+    this.clientService
+      .remove(clientId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isDeleting.set(false);
+          this.closeDeleteModal();
+          this.loadClients();
+        },
+        error: (error: ApiError) => {
+          this.isDeleting.set(false);
+          this.deleteError.set(error);
         },
       });
   }
