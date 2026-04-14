@@ -18,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,15 +125,13 @@ class AccountServiceImplTest {
                 .build();
 
         when(accountRepository.findByIdAndActiveTrue(5L)).thenReturn(Optional.of(existing));
-        when(clientRepository.findByIdAndActiveTrue(2L)).thenReturn(Optional.of(newClient));
         when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         AccountDto result = accountService.update(5L, input);
 
         assertEquals(AccountType.SAVINGS, result.getType());
         assertEquals(new BigDecimal("120.00"), result.getInitialBalance());
-        assertEquals(false, result.getActive());
-        assertEquals(2L, result.getClientId());
+        assertEquals(1L, result.getClientId());
         assertEquals("100099", result.getNumber());
     }
 

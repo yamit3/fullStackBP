@@ -18,14 +18,14 @@ import java.math.BigDecimal;
 public class MovementDto {
     Long id;
     Long date;
-
     MovementType type;
 
     @NotNull(message = "Value must not be null")
     @DecimalMin(value = "0.00", inclusive = false, message = "Value must be different than zero")
     BigDecimal value;
-
     BigDecimal balance;
-
+    boolean active;
     Long accountId;
+    String accountNumber;
+    String accountType;
 }

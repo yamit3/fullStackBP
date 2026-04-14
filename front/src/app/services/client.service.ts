@@ -4,6 +4,7 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { Client } from '../interfaces/client.interface';
 import { Error as ApiError } from '../interfaces/error.interface';
 import { environment } from '../../environments/environment';
+import {AccountReport, AccountReportRequest} from '../interfaces/account-report.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ClientService {
@@ -30,6 +31,10 @@ export class ClientService {
 
   remove(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(catchError(this.handleError));
+  }
+
+  getReport(payload: AccountReportRequest): Observable<AccountReport> {
+    return this.http.post<AccountReport>(`${environment.apiBaseUrl}/reporte`, payload).pipe(catchError(this.handleError));
   }
 
   private normalizeError(error: HttpErrorResponse): ApiError {

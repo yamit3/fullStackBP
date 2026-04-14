@@ -5,5 +5,8 @@ export interface Movement {
   id: number;
   type: 'DEPOSIT' | 'WITHDRAW';
   value: number;
+  active: boolean;
+  accountNumber: string;
+  accountType: string;
 }
 

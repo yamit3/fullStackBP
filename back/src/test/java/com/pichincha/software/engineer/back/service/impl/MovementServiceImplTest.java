@@ -5,6 +5,7 @@ import com.pichincha.software.engineer.back.exception.ApplicationException;
 import com.pichincha.software.engineer.back.model.Account;
 import com.pichincha.software.engineer.back.model.Client;
 import com.pichincha.software.engineer.back.model.Movement;
+import com.pichincha.software.engineer.back.model.enums.AccountType;
 import com.pichincha.software.engineer.back.model.enums.MovementType;
 import com.pichincha.software.engineer.back.repository.AccountRepository;
 import com.pichincha.software.engineer.back.repository.MovementRepository;
@@ -114,17 +115,6 @@ class MovementServiceImplTest {
     }
 
     @Test
-    void createShouldThrowBadRequestWhenBalanceIsMissingInPayload() {
-        MovementDto request = movementDto(MovementType.DEPOSIT, new BigDecimal("10.00"), 1L);
-        request.setBalance(null);
-
-        ApplicationException ex = assertThrows(ApplicationException.class, () -> movementService.create(request));
-
-        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatus());
-        assertEquals("Movement balance is required", ex.getMessage());
-    }
-
-    @Test
     void findByIdShouldThrowBadRequestWhenIdIsNull() {
         ApplicationException ex = assertThrows(ApplicationException.class, () -> movementService.findById(null));
 
@@ -137,6 +127,7 @@ class MovementServiceImplTest {
         account.setId(id);
         account.setCurrentBalance(currentBalance);
         account.setActive(true);
+        account.setType(AccountType.SAVINGS);
         Client client = new Client();
         client.setId(99L);
         account.setClient(client);

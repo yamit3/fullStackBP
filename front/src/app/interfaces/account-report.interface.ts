@@ -10,3 +10,10 @@ export interface AccountReport {
   pdf: string | null;
 }
 
+export interface AccountReportRequest {
+  identification: string;
+  startDate: number;
+  endDate: number;
+  pdf: boolean;
+}
+

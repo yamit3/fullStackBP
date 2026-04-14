@@ -134,7 +134,7 @@ public class AccountServiceImpl implements AccountService {
         // number is assigned by service during create
         account.setType(accountDto.getType());
         account.setInitialBalance(accountDto.getInitialBalance());
-        account.setActive(accountDto.getActive());
+        account.setActive(accountDto.isActive());
         account.setClient(getClientOrThrow(accountDto.getClientId()));
         return account;
     }
@@ -143,10 +143,6 @@ public class AccountServiceImpl implements AccountService {
         // account number is immutable after creation
         account.setType(accountDto.getType());
         account.setInitialBalance(accountDto.getInitialBalance());
-        account.setActive(accountDto.getActive());
-        if (accountDto.getClientId() != null) {
-            account.setClient(getClientOrThrow(accountDto.getClientId()));
-        }
     }
 
     private AccountDto toDto(Account account) {
@@ -158,6 +154,7 @@ public class AccountServiceImpl implements AccountService {
                 .currentBalance(account.getCurrentBalance())
                 .active(account.getActive())
                 .clientId(account.getClient() != null ? account.getClient().getId() : null)
+                .clientName(account.getClient() != null ? account.getClient().getName() : null)
                 .build();
     }
 

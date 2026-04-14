@@ -28,7 +28,8 @@ public class AccountDto {
 
     BigDecimal currentBalance;
 
-    Boolean active;
+    boolean active = true;
 
     Long clientId;
+    String clientName;
 }

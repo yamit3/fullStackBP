@@ -95,7 +95,6 @@ public class MovementServiceImpl implements MovementService {
     @Override
     @Transactional
     public MovementDto update(Long id, MovementDto movementDto) {
-        validateMovementPayload(movementDto);
 
         try {
             Movement existingMovement = getMovementOrThrow(id);
@@ -133,9 +132,6 @@ public class MovementServiceImpl implements MovementService {
         }
         if (movementDto.getValue() == null) {
             throw new ApplicationException("Movement value is required", HttpStatus.BAD_REQUEST);
-        }
-        if (movementDto.getBalance() == null) {
-            throw new ApplicationException("Movement balance is required", HttpStatus.BAD_REQUEST);
         }
         if (movementDto.getAccountId() == null) {
             throw new ApplicationException("Account id is required", HttpStatus.BAD_REQUEST);
@@ -183,11 +179,8 @@ public class MovementServiceImpl implements MovementService {
     }
 
     private void mergeMovement(Movement movement, MovementDto movementDto) {
-        movement.setDate(new Timestamp(movementDto.getDate()));
-        movement.setBalance(movementDto.getBalance());
         movement.setType(movementDto.getType());
         movement.setValue(movementDto.getValue());
-        movement.setAccount(getAccountOrThrow(movementDto.getAccountId()));
     }
 
     private MovementDto toDto(Movement movement) {
@@ -198,6 +191,9 @@ public class MovementServiceImpl implements MovementService {
                 .value(movement.getValue())
                 .balance(movement.getBalance())
                 .accountId(movement.getAccount() != null ? movement.getAccount().getId() : null)
+                .accountNumber(movement.getAccount() != null ? movement.getAccount().getNumber() : null)
+                .accountType(movement.getAccount() != null ? movement.getAccount().getType().name(): null)
+                .active(movement.getActive())
                 .build();
     }
 }
