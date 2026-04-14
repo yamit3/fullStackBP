@@ -1,0 +1,62 @@
+<section class="section-shell" aria-labelledby="page-title">
+  <div class="content-header">
+    <h2 id="page-title" class="section-title">{{ title }}</h2>
+    <button type="button" class="new-button" [attr.aria-label]="createButtonAriaLabel">
+      Nuevo
+    </button>
+  </div>
+
+  <label class="sr-only" for="search-input">{{ searchLabel }}</label>
+  <input
+    id="search-input"
+    type="search"
+    class="search-input"
+    [formControl]="searchControl"
+    [placeholder]="searchPlaceholder"
+  />
+
+  <div class="table-panel">
+    <table class="data-table" [attr.aria-label]="tableAriaLabel">
+      <thead>
+        <tr>
+          <th scope="col">Nombres</th>
+          <th scope="col">Dirección</th>
+          <th scope="col">Teléfono</th>
+          <th scope="col">Contraseña</th>
+          <th scope="col">Estado</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isLoading()) {
+          <tr class="table-row">
+            <td colspan="6">Cargando clientes...</td>
+          </tr>
+        } @else if (loadError()) {
+          <tr class="table-row">
+            <td colspan="6">{{ loadError()?.message }} ({{ loadError()?.status }})</td>
+          </tr>
+        } @else if (clients().length === 0) {
+          <tr class="table-row">
+            <td colspan="6">No hay clientes registrados.</td>
+          </tr>
+        } @else {
+          @for (client of clients(); track client.id) {
+            <tr class="table-row">
+              <td>{{ client.name }}</td>
+              <td>{{ client.address }}</td>
+              <td>{{ client.phone }}</td>
+              <td>{{ client.password ?? '---' }}</td>
+              <td>{{ client.active ? 'Activo' : 'Inactivo' }}</td>
+              <td>
+                <button type="button" aria-label="Editar cliente">🖊</button>
+                <button type="button" aria-label="Eliminar cliente">❌</button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+

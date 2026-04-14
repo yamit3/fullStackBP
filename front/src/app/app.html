@@ -22,30 +22,21 @@
       </ul>
     </nav>
 
-    <main class="content-area" aria-labelledby="page-title">
-      <div class="content-header">
-        <h2 id="page-title" class="section-title">{{ pageTitle() }}</h2>
-
-        <button type="button" class="new-button" aria-label="Crear nuevo cliente">
-          Nuevo
-        </button>
-      </div>
-
-      <label class="sr-only" for="search-input">Buscar clientes</label>
-      <input
-        id="search-input"
-        type="search"
-        class="search-input"
-        [formControl]="searchControl"
-        placeholder="Buscar"
-      />
-
-      <section class="table-panel" aria-label="Listado de clientes">
-        <h3 class="sr-only">Resultados</h3>
-        @for (row of [1, 2, 3, 4, 5, 6]; track row) {
-          <div class="table-row" aria-hidden="true"></div>
+    <main class="content-area">
+      @switch (activeSection()) {
+        @case ('Clientes') {
+          <app-clientes-section />
         }
-      </section>
+        @case ('Cuentas') {
+          <app-cuentas-section />
+        }
+        @case ('Movimientos') {
+          <app-movimientos-section />
+        }
+        @case ('Reportes') {
+          <app-reportes-section />
+        }
+      }
     </main>
   </div>
 </div>

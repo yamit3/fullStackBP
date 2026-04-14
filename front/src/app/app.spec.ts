@@ -24,4 +24,20 @@ describe('App', () => {
     expect(compiled.querySelector('.new-button')?.textContent).toContain('Nuevo');
     expect(compiled.querySelector('#search-input')).toBeTruthy();
   });
+
+  it('should render the selected section component', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const menuButtons = fixture.nativeElement.querySelectorAll('.menu-item') as NodeListOf<HTMLButtonElement>;
+    const cuentasButton = Array.from(menuButtons).find((button) =>
+      button.textContent?.includes('Cuentas'),
+    );
+
+    cuentasButton?.click();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('#page-title')?.textContent).toContain('Cuentas');
+  });
 });
