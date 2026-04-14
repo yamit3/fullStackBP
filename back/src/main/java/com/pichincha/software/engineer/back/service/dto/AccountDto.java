@@ -6,9 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 @Getter
@@ -20,8 +18,6 @@ import java.math.BigDecimal;
 public class AccountDto {
     Long id;
 
-    @NotBlank(message = "Account number is required")
-    @Pattern(regexp = "\\d{6,}", message = "Account number must contain only digits and be at least 6 characters")
     String number;
 
     AccountType type;

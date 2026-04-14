@@ -10,5 +10,7 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
 
     Optional<Client> findByIdAndActiveTrue(Long id);
 
+    Optional<Client> findByIdentificationAndActiveTrue(String identification);
+
     List<Client> findAllByActiveTrue();
 }

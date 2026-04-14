@@ -90,8 +90,6 @@ public class MovementServiceImpl implements MovementService {
             Movement existingMovement = getMovementOrThrow(id);
             existingMovement.setActive(false);
             movementRepository.save(existingMovement);
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApplicationException("Movement cannot be deleted due to related data", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
             throw ex;
         } catch (Exception ex) {

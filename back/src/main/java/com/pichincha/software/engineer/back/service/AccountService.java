@@ -8,7 +8,7 @@ public interface AccountService {
 
     AccountDto create(AccountDto accountDto);
 
-    AccountDto findById(Long id);
+    AccountDto findById(String number);
 
     List<AccountDto> findAll();
 

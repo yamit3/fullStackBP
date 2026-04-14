@@ -32,7 +32,7 @@ public class ClientServiceImpl implements ClientService {
         try {
             Client client = toEntity(clientDto);
             client.setId(null);
-            return toDto(clientRepository.save(client));
+            return toDto(clientRepository.saveAndFlush(client));
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationException("Client data violates constraints", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
@@ -43,9 +43,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDto findById(Long id) {
+    public ClientDto findById(String identification) {
         try {
-            return toDto(getClientOrThrow(id));
+            return toDto(getClientByIdentificationOrThrow(identification));
         } catch (ApplicationException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -88,9 +88,7 @@ public class ClientServiceImpl implements ClientService {
             Client existingClient = getClientOrThrow(id);
             existingClient.setActive(false);
             clientRepository.save(existingClient);
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApplicationException("Client cannot be deleted due to related data", HttpStatus.CONFLICT);
-        } catch (ApplicationException ex) {
+        }  catch (ApplicationException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ApplicationException("Unexpected error while deleting client", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -104,6 +102,15 @@ public class ClientServiceImpl implements ClientService {
 
         return clientRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new ApplicationException("Client not found with id: " + id, HttpStatus.NOT_FOUND));
+    }
+
+    private Client getClientByIdentificationOrThrow(String identification) {
+        if (identification == null || identification.isBlank()) {
+            throw new ApplicationException("Client identification is required", HttpStatus.BAD_REQUEST);
+        }
+
+        return clientRepository.findByIdentificationAndActiveTrue(identification)
+                .orElseThrow(() -> new ApplicationException("Client not found with identification: " + identification, HttpStatus.NOT_FOUND));
     }
 
     private void mergeClient(Client client, ClientDto clientDto) {
@@ -163,7 +170,6 @@ public class ClientServiceImpl implements ClientService {
                 .identification(client.getIdentification())
                 .address(client.getAddress())
                 .phone(client.getPhone())
-                .password(client.getPassword())
                 .active(client.getActive())
                 .build();
     }

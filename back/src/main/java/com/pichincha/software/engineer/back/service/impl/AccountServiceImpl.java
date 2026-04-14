@@ -33,6 +33,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             Account account = toEntity(accountDto);
             account.setId(null);
+            account.setNumber(nextAccountNumber());
             return toDto(accountRepository.save(account));
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationException("Account data violates constraints", HttpStatus.CONFLICT);
@@ -44,9 +45,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto findById(Long id) {
+    public AccountDto findById(String number) {
         try {
-            return toDto(getAccountOrThrow(id));
+            return toDto(getAccountByNumberOrThrow(number));
         } catch (ApplicationException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -93,8 +94,6 @@ public class AccountServiceImpl implements AccountService {
             Account existingAccount = getAccountOrThrow(id);
             existingAccount.setActive(false);
             accountRepository.save(existingAccount);
-        } catch (DataIntegrityViolationException ex) {
-            throw new ApplicationException("Account cannot be deleted due to related data", HttpStatus.CONFLICT);
         } catch (ApplicationException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -111,6 +110,15 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new ApplicationException("Account not found with id: " + id, HttpStatus.NOT_FOUND));
     }
 
+    private Account getAccountByNumberOrThrow(String number) {
+        if (number == null || number.isBlank()) {
+            throw new ApplicationException("Account number is required", HttpStatus.BAD_REQUEST);
+        }
+
+        return accountRepository.findByNumberAndActiveTrue(number)
+                .orElseThrow(() -> new ApplicationException("Account not found with number: " + number, HttpStatus.NOT_FOUND));
+    }
+
     private Client getClientOrThrow(Long clientId) {
         if (clientId == null) {
             throw new ApplicationException("Client id is required", HttpStatus.BAD_REQUEST);
@@ -122,7 +130,7 @@ public class AccountServiceImpl implements AccountService {
 
     private Account toEntity(AccountDto accountDto) {
         Account account = new Account();
-        account.setNumber(accountDto.getNumber());
+        // number is assigned by service during create
         account.setType(accountDto.getType());
         account.setInitialBalance(accountDto.getInitialBalance());
         account.setActive(accountDto.getActive());
@@ -131,7 +139,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void mergeAccount(Account account, AccountDto accountDto) {
-        account.setNumber(accountDto.getNumber());
+        // account number is immutable after creation
         account.setType(accountDto.getType());
         account.setInitialBalance(accountDto.getInitialBalance());
         account.setActive(accountDto.getActive());
@@ -150,5 +158,10 @@ public class AccountServiceImpl implements AccountService {
                 .clientId(account.getClient() != null ? account.getClient().getId() : null)
                 .build();
     }
-}
 
+    private String nextAccountNumber() {
+        Long currentMax = accountRepository.findMaxNumber();
+        long next = (currentMax == null ? 100000L : currentMax) + 1L;
+        return String.valueOf(next);
+    }
+}

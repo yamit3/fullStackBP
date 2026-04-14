@@ -162,3 +162,6 @@ buildNumber.properties
 
 .windsurf
 .vscode
+/gradle-build.log
+/gradle-exit.log
+/gradle-test.log

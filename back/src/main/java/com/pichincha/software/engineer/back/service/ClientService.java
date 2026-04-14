@@ -8,7 +8,7 @@ public interface ClientService {
 
     ClientDto create(ClientDto clientDto);
 
-    ClientDto findById(Long id);
+    ClientDto findById(String identification);
 
     List<ClientDto> findAll();
 

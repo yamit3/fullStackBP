@@ -32,23 +32,23 @@ class AccountDtoValidationTest {
     }
 
     @Test
-    void shouldRejectAccountNumberWhenNotOnlyDigitsOrTooShort() {
+    void shouldAcceptAccountDtoWithoutNumber() {
+        // number is now auto-generated, should not be required in request
         AccountDto dto = AccountDto.builder()
-                .number("12AB")
-                .type(AccountType.SAVINGS)
-                .initialBalance(new BigDecimal("100.00"))
+                .type(AccountType.CHECKING)
+                .initialBalance(new BigDecimal("50.00"))
                 .active(true)
                 .build();
 
         Set<ConstraintViolation<AccountDto>> violations = validator.validate(dto);
 
-        assertTrue(violations.stream().anyMatch(v -> "number".equals(v.getPropertyPath().toString())));
+        assertFalse(violations.stream().anyMatch(v -> "number".equals(v.getPropertyPath().toString())));
+        assertFalse(violations.stream().anyMatch(v -> "initialBalance".equals(v.getPropertyPath().toString())));
     }
 
     @Test
     void shouldRejectInitialBalanceWhenZeroOrNegative() {
         AccountDto dto = AccountDto.builder()
-                .number("123456")
                 .type(AccountType.SAVINGS)
                 .initialBalance(BigDecimal.ZERO)
                 .active(true)
@@ -62,7 +62,6 @@ class AccountDtoValidationTest {
     @Test
     void shouldAcceptValidAccountData() {
         AccountDto dto = AccountDto.builder()
-                .number("123456")
                 .type(AccountType.CHECKING)
                 .initialBalance(new BigDecimal("50.00"))
                 .active(true)
@@ -70,8 +69,6 @@ class AccountDtoValidationTest {
 
         Set<ConstraintViolation<AccountDto>> violations = validator.validate(dto);
 
-        assertFalse(violations.stream().anyMatch(v -> "number".equals(v.getPropertyPath().toString())));
         assertFalse(violations.stream().anyMatch(v -> "initialBalance".equals(v.getPropertyPath().toString())));
     }
 }
-
